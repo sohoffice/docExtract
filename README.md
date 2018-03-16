@@ -21,12 +21,16 @@ Use the plugin with the following setup:
 In the `project/plugins.sbt` file
 
 ```
+resolvers += Resolver.bintrayIvyRepo("sohoffice", "sbt-plugins")
+
 addSbtPlugin("com.sohoffice" % "sbt-doc-extract" % "0.1-SNAPSHOT")
 ```
 
 In the `build.sbt` file
 
 ```
+resolvers += Resolver.bintrayIvyRepo("sohoffice", "sbt-plugins")
+
 lazy val root = (project in file("."))
   .enablePlugins(DocExtractPlugin)
   .settings(

@@ -1,4 +1,4 @@
-package com.sohoffice.sbtDocExtract
+package com.sohoffice.doc.extract.sbt
 
 import java.io.File
 

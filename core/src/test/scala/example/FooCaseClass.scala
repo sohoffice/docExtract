@@ -1,21 +1,20 @@
 package example
 
 /**
-  * FooCaseClass
-  *
-  * @param name name
-  * @param age  age
-  */
+ * FooCaseClass
+ *
+ * @param name name
+ * @param age  age
+ */
 case class FooCaseClass(
   name: String,
-  age: Int
-) {
+  age: Int) {
 
   /**
-    * method
-    *
-    * @return
-    */
+   * method
+   *
+   * @return
+   */
   def method: String = ""
 
 }

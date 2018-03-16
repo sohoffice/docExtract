@@ -1,41 +1,40 @@
 package example
 
 /**
-  * FooObject
-  */
+ * FooObject
+ */
 object FooObject {
 
   /**
-    * FooType
-    */
+   * FooType
+   */
   type FooType = String
 
   /**
-    * method
-    *
-    * @param arg arg
-    * @return
-    */
+   * method
+   *
+   * @param arg arg
+   * @return
+   */
   def method(arg: Int): String = ""
 
   /**
-    * method
-    */
+   * method
+   */
   val method: String = ""
 
   /**
-    * FooBarObject
-    */
+   * FooBarObject
+   */
   object FooBarObject {
 
     /**
-      * FooBarBazCaseClass
-      *
-      * @param name name
-      */
+     * FooBarBazCaseClass
+     *
+     * @param name name
+     */
     case class FooBarBazCaseClass(
-      name: String
-    )
+      name: String)
 
   }
 }

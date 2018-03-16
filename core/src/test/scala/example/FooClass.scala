@@ -1,24 +1,23 @@
 package example
 
 /**
-  * FooClass
-  *
-  * @param name name
-  */
+ * FooClass
+ *
+ * @param name name
+ */
 class FooClass(
-  name: String
-) {
+  name: String) {
 
   /**
-    * method
-    *
-    * @return
-    */
+   * method
+   *
+   * @return
+   */
   def method: String = ""
 
   /**
-    * value
-    */
+   * value
+   */
   lazy val lazyValue: Int = 0
 
 }

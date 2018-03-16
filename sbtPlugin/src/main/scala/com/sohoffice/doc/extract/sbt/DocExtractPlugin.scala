@@ -1,7 +1,8 @@
-package com.sohoffice.sbtDocExtract
+package com.sohoffice.doc.extract.sbt
 
 import sbt._
 import Keys._
+import com.sohoffice.doc.extract.BuildInfo
 
 object DocExtractPlugin extends AutoPlugin {
 
@@ -17,7 +18,7 @@ object DocExtractPlugin extends AutoPlugin {
     Seq(
       libraryDependencies ++= Seq(
         "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-        "com.sohoffice" %% "doc-extract" % "0.1-SNAPSHOT"),
+        "com.sohoffice" %% "doc-extract" % BuildInfo.version),
       docExtract := {
         val jars = (fullClasspathAsJars in (Compile, doc)).value.map(_.data).toVector
         val options = ForkOptions()

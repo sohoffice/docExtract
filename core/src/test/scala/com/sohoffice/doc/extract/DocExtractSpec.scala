@@ -23,8 +23,7 @@ class DocExtractSpec extends DocExtractBaseSpec {
       "example.FooCaseClass",
       "example.FooCaseClass.name",
       "example.FooCaseClass.age",
-      "example.FooCaseClass.method"
-    )
+      "example.FooCaseClass.method")
 
     println("handle case class")
   }
@@ -39,8 +38,7 @@ class DocExtractSpec extends DocExtractBaseSpec {
       "example.FooObject.method(Int)",
       "example.FooObject.FooBarObject",
       "example.FooObject.FooBarObject.FooBarBazCaseClass",
-      "example.FooObject.FooBarObject.FooBarBazCaseClass.name"
-    )
+      "example.FooObject.FooBarObject.FooBarBazCaseClass.name")
 
     println("handle object")
   }
@@ -52,8 +50,7 @@ class DocExtractSpec extends DocExtractBaseSpec {
     prop.keySet should contain allElementsOf Seq(
       "example.FooClass",
       "example.FooClass.method",
-      "example.FooClass.lazyValue"
-    )
+      "example.FooClass.lazyValue")
 
     println("handle class")
   }
@@ -65,14 +62,12 @@ class DocExtractSpec extends DocExtractBaseSpec {
     prop.keySet should contain allElementsOf Seq(
       "example.MultiLineClass",
       "example.MultiLineClass.method",
-      "example.MultiLineClass.lazyValue"
-    )
+      "example.MultiLineClass.lazyValue")
 
     assert(prop == Map(
       "example.MultiLineClass" -> "MultiLineClass has line1 .\nIt also has line2.",
       "example.MultiLineClass.method" -> "method has line1 .\nAnd line2",
-      "example.MultiLineClass.lazyValue" -> "value has line1 .\nAnd line2"
-    ))
+      "example.MultiLineClass.lazyValue" -> "value has line1 .\nAnd line2"))
 
     println("handle multiline comments")
   }
@@ -91,8 +86,7 @@ class DocExtractSpec extends DocExtractBaseSpec {
         ScalaDoc.process(Array(
           "-classpath", classpath,
           "-doc-generator", "com.sohoffice.doc.extract.DocExtractDoclet",
-          source.getAbsolutePath
-        ))
+          source.getAbsolutePath))
         println(s"Finish running scaladoc.")
         println("------------------------")
         Source.fromFile(out, "UTF8").getLines().foreach(s => println(s"  $s"))
