@@ -14,7 +14,7 @@ example.CaseClass.age = Age of CaseClass
 example.FooClass = Foo class
 example.FooClass.someMethod() = some method
 example.FooClass.someMethod(String) = some method with argument
-example.FooClass.someMethod(String):name = The first argument of someMethod is name.
+example.FooClass.someMethod(String)#name = The first argument of someMethod is name.
 ```
 
 sbt 0.13 is not supported.
@@ -48,8 +48,6 @@ Use the plugin with the following setup:
 In the `project/plugins.sbt` file
 
 ```
-resolvers += Resolver.bintrayIvyRepo("sohoffice", "sbt-plugins")
-
 addSbtPlugin("com.sohoffice" % "sbt-doc-extract" % "0.0.3")
 ```
 
