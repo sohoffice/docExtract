@@ -32,10 +32,11 @@ class DocExtractSpec extends DocExtractBaseSpec {
     val source = new File("core/src/test/scala/example/FooObject.scala")
 
     val prop = runScaladoc(source)
-    prop.keySet should contain allElementsOf Seq(
+    prop.keySet should contain theSameElementsAs Seq(
       "example.FooObject",
       "example.FooObject.method",
       "example.FooObject.method(Int)",
+      "example.FooObject.method(Int)#arg",
       "example.FooObject.FooBarObject",
       "example.FooObject.FooBarObject.FooBarBazCaseClass",
       "example.FooObject.FooBarObject.FooBarBazCaseClass.name")
@@ -47,9 +48,11 @@ class DocExtractSpec extends DocExtractBaseSpec {
     val source = new File("core/src/test/scala/example/FooClass.scala")
 
     val prop = runScaladoc(source)
-    prop.keySet should contain allElementsOf Seq(
+    prop.keySet should contain theSameElementsAs Seq(
       "example.FooClass",
       "example.FooClass.method",
+      "example.FooClass.method(String)",
+      "example.FooClass.method(String)#nickname",
       "example.FooClass.lazyValue")
 
     println("handle class")
@@ -59,7 +62,7 @@ class DocExtractSpec extends DocExtractBaseSpec {
     val source = new File("core/src/test/scala/example/MultiLineClass.scala")
 
     val prop = runScaladoc(source)
-    prop.keySet should contain allElementsOf Seq(
+    prop.keySet should contain theSameElementsAs Seq(
       "example.MultiLineClass",
       "example.MultiLineClass.method",
       "example.MultiLineClass.lazyValue")

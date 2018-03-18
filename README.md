@@ -1,4 +1,4 @@
-A really simple sbt plugin to extract document to an output file. At the moment it works for scala source files and will generate a file 
+A really simple sbt 1.0 plugin to extract document to an output file. At the moment it works for scala source files and will generate a file 
 in java resource bundle format.
 
 The output file can be used as input of other build tool, which I plan to use it along with 
@@ -7,11 +7,36 @@ The output file can be used as input of other build tool, which I plan to use it
 Output example:
 
 ```
-com.sohoffice.doc.extract.CaseClass = This is a CaseClass for testing\
+example.CaseClass = This is a CaseClass for testing\
 This is the second line.
-com.sohoffice.doc.extract.CaseClass.name = Name of CaseClass
-com.sohoffice.doc.extract.CaseClass.age = Age of CaseClass
+example.CaseClass.name = Name of CaseClass
+example.CaseClass.age = Age of CaseClass
+example.FooClass = Foo class
+example.FooClass.someMethod() = some method
+example.FooClass.someMethod(String) = some method with argument
+example.FooClass.someMethod(String):name = The first argument of someMethod is name.
 ```
+
+sbt 0.13 is not supported.
+
+Play-Swagger
+------------
+
+The plugin is designed to be used with [play-swagger](https://github.com/iheartradio/play-swagger). The integration require the following steps.
+
+1. Install this plugin as described in the [Installation](#Installation) section.
+2. In build.sbt, add (or modify) the following project settings
+
+```
+lazy val root = (project in file("."))
+  .enablePlugins(DocExtractPlugin, SwaggerPlugin)
+  .settings(
+    swagger := swagger.dependsOn(docExtract).value,
+    swaggerDescriptionFile := docExtractTargetFile.value.right.toOption
+  )
+```
+
+  The above will instruct sbt to run docExtract before swagger, and supply docExtractTargetFile as swaggerDescriptionFile so it can be picked up by swagger.    
 
 Installation
 ------------
@@ -23,7 +48,7 @@ In the `project/plugins.sbt` file
 ```
 resolvers += Resolver.bintrayIvyRepo("sohoffice", "sbt-plugins")
 
-addSbtPlugin("com.sohoffice" % "sbt-doc-extract" % "0.1-SNAPSHOT")
+addSbtPlugin("com.sohoffice" % "sbt-doc-extract" % "0.0.3")
 ```
 
 In the `build.sbt` file
@@ -40,3 +65,8 @@ lazy val root = (project in file("."))
 
 You may specify a filename to `(docExtractTarget in docExtract)`, or use `STDOUT` or `STDERR` to output to console. 
 The default of docExtractTarget is `docExtract.properties`, which means the plugin will output to the file `target/docExtract.properties`.
+
+Running
+-------
+
+In sbt console, execute 'docExtract' to run.

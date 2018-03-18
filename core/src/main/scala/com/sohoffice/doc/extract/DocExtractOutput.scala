@@ -15,7 +15,7 @@ trait DocExtractOutput {
 
   def generate(tpl: DocTemplateEntity, collector: Formatter)(implicit universe: doc.Universe): Seq[String] = {
     implicit val impCollector: Formatter = collector
-    generateForType(tpl) ++ generateForValues(tpl) ++ generateForMembers(tpl) ++ generateForClassParameters(tpl)
+    generateForType(tpl) ++ generateForValues(tpl) ++ generateForMembers(tpl) ++ generateForParameters(tpl)
   }
 
   protected def generateForType(tpl: DocTemplateEntity)(implicit collector: Formatter): Seq[String] = {
@@ -34,6 +34,16 @@ trait DocExtractOutput {
       } else {
         entry(tpl, m).toSeq
       })
+    tpl.members.filter(m => acceptMember(tpl, m)).flatMap {
+      case m if m.isType =>
+        Nil
+      case m: MemberTemplateEntity =>
+        entry(tpl, m).toSeq
+      case m: Def =>
+        entry(tpl, m).toSeq ++ generateForParameters(m)
+      case m =>
+        entry(tpl, m).toSeq
+    }
   }
 
   protected def generateForValues(tpl: DocTemplateEntity)(implicit collector: Formatter, universe: Universe): Seq[String] = {
@@ -42,8 +52,8 @@ trait DocExtractOutput {
     }
   }
 
-  protected def generateForClassParameters(tpl: DocTemplateEntity)(implicit collector: Formatter, universe: doc.Universe): Seq[String] = {
-    if (tpl.isClass) {
+  protected def generateForParameters(tpl: MemberTemplateEntity)(implicit collector: Formatter, universe: doc.Universe): Seq[String] = {
+    if (tpl.isClass || tpl.isDef) {
       tpl.valueParams.flatten.filter(v => acceptParam(tpl, v)).flatMap { v =>
         entry(tpl, v)
       }
@@ -52,41 +62,47 @@ trait DocExtractOutput {
     }
   }
 
+  protected def generateForParameters(tpl: Def)(implicit collector: Formatter, universe: doc.Universe): Seq[String] = {
+    tpl.valueParams.flatten.filter(v => acceptParam(tpl, v)).flatMap { v =>
+      entry(tpl, v)
+    }
+  }
+
   def acceptType(tpl: DocTemplateEntity): Boolean = true
 
   def acceptMember(tpl: DocTemplateEntity, member: MemberEntity): Boolean = true
 
-  def acceptParam(tpl: DocTemplateEntity, pe: ParameterEntity): Boolean = true
+  def acceptParam(tpl: MemberEntity, pe: ParameterEntity): Boolean = true
 
   /**
-   * I believe values are duplicated with members, so we don't really need it.
-   */
+    * I believe values are duplicated with members, so we don't really need it.
+    */
   def acceptVal(tpl: DocTemplateEntity, v: Val): Boolean = false
 
   /**
-   * Extract document of a type
-   *
-   * @param tpl
-   * @param collector
-   * @return
-   */
+    * Extract document of a type
+    *
+    * @param tpl
+    * @param collector
+    * @return
+    */
   def entry(tpl: DocTemplateEntity)(implicit collector: Formatter): Option[String] = {
     val typeComment = commentToText(tpl.comment).trim
     if (typeComment.nonEmpty && acceptType(tpl)) {
-      Some(collector.collect(tpl.toString(), null, typeComment))
+      Some(collector.collect(getBaseName(tpl), null, typeComment))
     } else {
       None
     }
   }
 
   /**
-   * Extract document of a type member
-   *
-   * @param tpl
-   * @param member
-   * @param collector
-   * @return
-   */
+    * Extract document of a type member
+    *
+    * @param tpl
+    * @param member
+    * @param collector
+    * @return
+    */
   def entry(tpl: DocTemplateEntity, member: MemberEntity)(implicit collector: Formatter): Option[String] = {
     val text = commentToText(member.comment)
     if (text.nonEmpty) {
@@ -95,21 +111,21 @@ trait DocExtractOutput {
       } else {
         member.name
       }
-      Some(collector.collect(tpl.toString(), memberName, text))
+      Some(collector.collect(getBaseName(tpl), memberName, text))
     } else {
       None
     }
   }
 
   /**
-   * Extract document of a class parameter or case class value
-   *
-   * @param tpl
-   * @param v
-   * @param collector
-   * @return
-   */
-  def entry(tpl: DocTemplateEntity, v: ParameterEntity)(implicit collector: Formatter): Option[String] = {
+    * Extract document of a class parameter or case class value
+    *
+    * @param tpl
+    * @param v
+    * @param collector
+    * @return
+    */
+  def entry(tpl: MemberEntity, v: ParameterEntity)(implicit collector: Formatter): Option[String] = {
     val opt = tpl.comment flatMap { comment =>
       v match {
         case vp: ValueParam =>
@@ -121,7 +137,7 @@ trait DocExtractOutput {
     opt flatMap { body =>
       val text = DocExtractOutput.bodyToText(body)
       if (text != null && text.nonEmpty) {
-        Some(collector.collect(tpl.toString(), v.name, text))
+        Some(collector.collect(getBaseName(tpl), getParameterElementName(tpl, v), text))
       } else {
         None
       }
@@ -141,29 +157,48 @@ trait DocExtractOutput {
 object DocExtractOutput {
 
   /**
-   * A default implementation that outputs everything
-   */
+    * A default implementation that outputs everything
+    */
   lazy val ALL = new DocExtractOutput {}
 
   /**
-   * Format the documentable element into a string
-   * The result will be passed to Writer to serialize
-   */
+    * Format the documentable element into a string
+    * The result will be passed to Writer to serialize
+    */
   trait Formatter {
     /**
-     * Do collect
-     */
+      * Do collect
+      */
     def collect(className: String, element: String, comment: String): String
   }
 
   class JavaResourceFileFormatter extends Formatter {
-    override def collect(className: String, element: String, comment: String): String = {
+    override def collect(baseName: String, element: String, comment: String): String = {
       val commentPart = comment.lines.map(_.trim).mkString("\\n\\\n")
       if (element == null || element.isEmpty) {
-        s"$className = $commentPart"
+        s"$baseName = $commentPart"
       } else {
-        s"$className.$element = $commentPart"
+        s"$baseName.$element = $commentPart"
       }
+    }
+  }
+
+  def getBaseName(tpl: MemberEntity): String = {
+    tpl match {
+      case m: Def =>
+        m.definitionName.takeWhile(ch => ch != '#')
+      case m =>
+        m.toString()
+    }
+  }
+
+  def getParameterElementName(tpl: MemberEntity, m: ParameterEntity) = {
+    (tpl, m) match {
+      case (d, p) if tpl.isDef =>
+        val methodName = tpl.signatureCompat.takeWhile(ch => ch != ':')
+        s"$methodName#${p.name}"
+      case _ =>
+        m.name
     }
   }
 
