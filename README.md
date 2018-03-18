@@ -36,7 +36,9 @@ lazy val root = (project in file("."))
   )
 ```
 
-  The above will instruct sbt to run docExtract before swagger, and supply docExtractTargetFile as swaggerDescriptionFile so it can be picked up by swagger.    
+  The above will instruct sbt to run docExtract before swagger, and supply docExtractTargetFile as swaggerDescriptionFile so it can be picked up by swagger.
+  
+  Execute `swagger` to re-generate swagger.json
 
 Installation
 ------------
