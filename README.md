@@ -17,14 +17,14 @@ example.FooClass.someMethod(String) = some method with argument
 example.FooClass.someMethod(String)#name = The first argument of someMethod is name.
 ```
 
-sbt 0.13 is not supported.
+Please note this plugin only support sbt 1.0, sbt 0.13 or lower is not supported.
 
 Play-Swagger
 ------------
 
 The plugin is designed to be used with [play-swagger](https://github.com/iheartradio/play-swagger). The integration require the following steps.
 
-1. Install this plugin as described in the [Installation](#Installation) section.
+1. Install this plugin as described in the [Standalone installation](#installation) section.
 2. In build.sbt, add (or modify) the following project settings
 
 ```
@@ -40,8 +40,8 @@ lazy val root = (project in file("."))
   
   Execute `swagger` to re-generate swagger.json
 
-Installation
-------------
+Standalone installation
+-----------------------
 
 Use the plugin with the following setup:
 
