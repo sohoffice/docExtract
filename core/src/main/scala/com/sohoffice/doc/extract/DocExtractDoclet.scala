@@ -1,12 +1,13 @@
 package com.sohoffice.doc.extract
 
-import java.io.{ File, PrintWriter, Writer }
+import java.io.{File, PrintWriter, Writer}
 
+import scala.reflect.internal.Reporter
 import scala.tools.nsc.doc.Universe
-import scala.tools.nsc.doc.doclet.{ Generator, Universer }
+import scala.tools.nsc.doc.doclet.{Generator, Universer}
 import scala.tools.nsc.doc.model.DocTemplateEntity
 
-class DocExtractDoclet extends Generator with Universer {
+class DocExtractDoclet(reporter: Reporter) extends Generator with Universer {
   private implicit val impUniverse: Universe = universe
 
   private val output = DocExtractOutput.ALL
@@ -19,10 +20,10 @@ class DocExtractDoclet extends Generator with Universer {
   }
 
   /**
-   * Produce output for one entity, and move on to the children.
-   *
-   * @param tpl
-   */
+    * Produce output for one entity, and recursively move on to the children.
+    *
+    * @param tpl
+    */
   def generateFor(tpl: DocTemplateEntity)(implicit writer: Writer): Unit = {
     output.generate(tpl).foreach(s => {
       writer.write(s)
@@ -41,8 +42,10 @@ class DocExtractDoclet extends Generator with Universer {
         new PrintWriter(System.err)
       case _ =>
         val targetFile = new File(target)
-        if (!targetFile.exists() && !targetFile.getParentFile.mkdirs()) {
-          println(s"Fail to create target directory ${targetFile.getParentFile}, continue for now.")
+        if (!targetFile.exists() && !targetFile.getParentFile.exists() && !targetFile.getParentFile.mkdirs()) {
+          val errMsg = s"Fail to create target directory ${targetFile.getParentFile}."
+          println(errMsg)
+          throw new IllegalArgumentException(errMsg)
         }
         new PrintWriter(target, "UTF8")
     }

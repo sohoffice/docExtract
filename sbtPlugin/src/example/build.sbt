@@ -4,5 +4,5 @@ resolvers += Resolver.bintrayIvyRepo("sohoffice", "sbt-plugins")
 lazy val root = (project in file("."))
   .enablePlugins(DocExtractPlugin)
   .settings(
-    (docExtractTarget in docExtract) := "STDOUT"
+    (docExtractTarget in docExtract) := "a"
   )

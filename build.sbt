@@ -1,6 +1,8 @@
-lazy val commonSettings = Seq(
-  version in ThisBuild := "0.0.2",
-  organization in ThisBuild := "com.sohoffice"
+inThisBuild(
+  Seq(
+    version in ThisBuild := "0.0.3-SNAPSHOT",
+    organization in ThisBuild := "com.sohoffice"
+  )
 )
 
 lazy val bintrayCommonSettings = Seq(
@@ -22,15 +24,15 @@ lazy val noPublishSettings = Seq(
 )
 
 lazy val docExtract = project.in(file("."))
-  .aggregate(core, mySbtPlugin)
+  .aggregate(core, plugin)
   .settings(sourcesInBase := false)
   .settings(noPublishSettings: _*)
 
 lazy val core = project.in(file("core"))
   .settings(
-    commonSettings,
     bintrayCommonSettings,
     name := "doc-extract",
+    scalaVersion := "2.12.4",
     crossScalaVersions := Seq("2.11.11", "2.12.4"),
     // scalaVersion := "2.11.11",
     libraryDependencies += {
@@ -39,19 +41,20 @@ lazy val core = project.in(file("core"))
           "org.scala-lang" % s"scala-compiler" % s"$major.11.11"
         case Some((major, 12)) =>
           "org.scala-lang" % s"scala-compiler" % s"$major.12.4"
+        case x =>
+          throw new IllegalArgumentException(s"Please improve the cross build setting, $x is unexpected.")
       }
     },
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
   )
 
-lazy val mySbtPlugin = project.in(file("sbtPlugin"))
+lazy val plugin = project.in(file("sbtPlugin"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.sohoffice.doc.extract"
   )
   .settings(
-    commonSettings,
     bintrayCommonSettings,
     name := "sbt-doc-extract",
     description := "Extract case class and properties description from scaladoc as a resource bundle.",
