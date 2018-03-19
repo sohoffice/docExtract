@@ -1,5 +1,5 @@
 A really simple sbt 1.0 plugin to extract document to an output file. At the moment it works for scala source files and will generate a file 
-in java resource bundle format.
+in java properties format.
 
 The output file can be used as input of other build tool, which I plan to use it along with 
 [play-swagger](https://github.com/iheartradio/play-swagger) to supply the description of swagger definitions.
@@ -17,16 +17,19 @@ example.FooClass.someMethod(String) = some method with argument
 example.FooClass.someMethod(String)#name = The first argument of someMethod is name.
 ```
 
-Please note this plugin only support sbt 1.0, sbt 0.13 or lower is not supported.
+Please note this plugin **only support sbt 1.0**.
 
 Play-Swagger
 ------------
 
-The plugin is designed to be used with [play-swagger](https://github.com/iheartradio/play-swagger). The integration require the following steps.
+The plugin is designed to be used with play-swagger to provision the descriptions of your api parameters and definitions. 
+The integration require the following steps.
+Or check the [seed project](https://github.com/sohoffice/play-doc-gen-seed-projects) for reference.
 
-- Clone [my modified version of play-swagger](https://github.com/sohoffice/docExtract), which will accept a java properties file to provision the descriptions.
+- Clone [my modified version of play-swagger](https://github.com/sohoffice/play-swagger), which will accept a java properties file to provision the descriptions.
 
-  > The modified version is currently only in my repo, I'll see if the community has the needs to decide whether to submit a pull request.
+  > The modified version is currently only in my repo. I'll submit a PR if someone shows interests. 
+  > Before that this version will have to stay in my repo, and installation will have to be local. (as described below)
 
 - In the cloned play-swagger directory, switch to play2.6 branch
 
@@ -34,7 +37,7 @@ The plugin is designed to be used with [play-swagger](https://github.com/iheartr
 git checkout play2.6
 ```
 
-- In the cloned play-swagger directory, publish the artifact to local
+- Publish the artifact to local with sbt
 
 ```sbtshell
 sbt
@@ -57,6 +60,7 @@ lazy val root = (project in file("."))
   .enablePlugins(PlayScala, DocExtractPlugin, SwaggerPlugin)
   .settings(
     // Make sure you set the swaggerDomainNameSpaces according to your package structure.
+    // You'll need this setting, otherwise swagger will fail.
     // swaggerDomainNameSpaces := Seq("io")
     swagger := swagger.dependsOn(docExtract).value,
     swaggerDescriptionFile := docExtractTargetFile.value.right.toOption
@@ -66,8 +70,6 @@ lazy val root = (project in file("."))
   The above will instruct sbt to run docExtract before swagger, and supply docExtractTargetFile as swaggerDescriptionFile so it can be picked up by swagger.
   
 - Execute `swagger` to re-generate swagger.json
-
-- Or check the [seed project](https://github.com/sohoffice/play-doc-gen-seed-projects) for reference.
 
 
 Standalone installation
@@ -89,14 +91,13 @@ resolvers += Resolver.bintrayIvyRepo("sohoffice", "sbt-plugins")
 lazy val root = (project in file("."))
   .enablePlugins(DocExtractPlugin)
   .settings(
-    (docExtractTarget in docExtract) := "STDOUT"
+    docExtractTarget := "STDOUT"
   )
 ```
 
-You may specify a filename to `(docExtractTarget in docExtract)`, or use `STDOUT` or `STDERR` to output to console. 
+You may specify an output filename to `docExtractTarget`, or use `STDOUT` or `STDERR` to output to console. 
 The default of docExtractTarget is `docExtract.properties`, which means the plugin will output to the file `target/docExtract.properties`.
 
-Running
--------
+##### Running
 
 In sbt console, execute 'docExtract' to run.
