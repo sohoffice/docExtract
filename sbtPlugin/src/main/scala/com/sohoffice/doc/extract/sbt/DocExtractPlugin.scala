@@ -13,7 +13,7 @@ object DocExtractPlugin extends AutoPlugin {
   import autoImport._
 
   // the plugin will run only when you execute it manually
-  override def trigger = noTrigger
+  override def trigger = allRequirements
 
   override def projectConfigurations: Seq[Configuration] = super.projectConfigurations ++ Seq(DocExtractConfig)
 
