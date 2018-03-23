@@ -22,33 +22,21 @@ Please note this plugin **only support sbt 1.0**.
 Play-Swagger
 ------------
 
-The plugin is designed to be used with play-swagger to provision the descriptions of your api parameters and definitions. 
-The integration require the following steps.
+The plugin is designed to be used with play-swagger to provision the descriptions of your api parameters and definitions.
+It has become part of [descriptive-play-swagger](https://github.com/sohoffice/play-swagger). Check that plugin for details.
 Or check the [seed project](https://github.com/sohoffice/play-doc-gen-seed-projects) for reference.
 
-- Clone [my modified version of play-swagger](https://github.com/sohoffice/play-swagger), which will accept a java properties file to provision the descriptions.
+> descriptive-play-swagger is an extension of [iheartradio play-swagger](https://github.com/iheartradio/play-swagger)
+>
+> The only difference is descriptive-play-swagger will generate description for your api parameters and definition classes.
+> All credits go to [iheartradio](https://github.com/iheartradio).
 
-  > The modified version is currently only in my repo. I'll submit a PR if someone shows interests. 
-  > Before that this version will have to stay in my repo, and installation will have to be local. (as described below)
-
-- In the cloned play-swagger directory, switch to play2.6 branch
-
-```
-git checkout play2.6
-```
-
-- Publish the artifact to local with sbt
-
-```sbtshell
-sbt
-> publishLocal
-```
+#### Installation
 
 - In the `project/plugins.sbt` file
 
 ```sbtshell
-addSbtPlugin("com.iheart" %% "sbt-play-swagger" % "0.7.5-SNAPSHOT")
-addSbtPlugin("com.sohoffice" % "sbt-doc-extract" % "0.0.3")
+addSbtPlugin("com.iheart" %% "sbt-play-swagger" % "0.7.4")
 ```
 
 - In the `build.sbt` file
