@@ -50,6 +50,7 @@ class DocExtractSpec extends DocExtractBaseSpec {
     val prop = runScaladoc(source)
     prop.keySet should contain theSameElementsAs Seq(
       "example.FooClass",
+      "example.FooClass.name",
       "example.FooClass.method",
       "example.FooClass.method(String)",
       "example.FooClass.method(String)#nickname",
@@ -64,15 +65,31 @@ class DocExtractSpec extends DocExtractBaseSpec {
     val prop = runScaladoc(source)
     prop.keySet should contain theSameElementsAs Seq(
       "example.MultiLineClass",
+      "example.MultiLineClass.name",
       "example.MultiLineClass.method",
       "example.MultiLineClass.lazyValue")
 
     assert(prop == Map(
       "example.MultiLineClass" -> "MultiLineClass has line1 .\nIt also has line2.",
+      "example.MultiLineClass.name" -> "name has line1 .\nAnd line2",
       "example.MultiLineClass.method" -> "method has line1 .\nAnd line2",
       "example.MultiLineClass.lazyValue" -> "value has line1 .\nAnd line2"))
 
     println("handle multiline comments")
+  }
+
+  it should "handle java case class" in {
+    val source = new File("core/src/test/scala/example/FooJavaClass.java")
+
+    val prop = runScaladoc(source)
+    println(s"key set ${prop.keySet}")
+    prop.keySet should contain allElementsOf Seq(
+      "example.FooJavaClass",
+      "example.FooJavaClass.name",
+      "example.FooJavaClass.age",
+      "example.FooJavaClass.method()")
+
+    println("handle java case class")
   }
 
   private def runScaladoc(source: File): Map[String, String] = {
