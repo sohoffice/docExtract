@@ -15,7 +15,7 @@ trait DocExtractOutput {
 
   def generate(tpl: DocTemplateEntity, collector: Formatter)(implicit universe: doc.Universe): Seq[String] = {
     implicit val impCollector: Formatter = collector
-    generateForType(tpl) ++ generateForValues(tpl) ++ generateForMembers(tpl) ++ generateForParameters(tpl)
+    generateForType(tpl) ++ generateForConstructor(tpl) ++ generateForValues(tpl) ++ generateForMembers(tpl) ++ generateForParameters(tpl)
   }
 
   protected def generateForType(tpl: DocTemplateEntity)(implicit collector: Formatter): Seq[String] = {
@@ -25,6 +25,17 @@ trait DocExtractOutput {
     } else {
       Nil
     }
+  }
+
+  protected def generateForConstructor(tpl: DocTemplateEntity)(implicit collector: Formatter): Seq[String] = {
+    tpl.constructors
+      .filter(_.isPrimary)
+      .flatMap { constructor =>
+        constructor.valueParams.flatten.map { param =>
+          entry(tpl, param).toList
+        }
+      }
+      .flatten
   }
 
   protected def generateForMembers(tpl: DocTemplateEntity)(implicit collector: Formatter, universe: Universe): Seq[String] = {
@@ -104,11 +115,15 @@ trait DocExtractOutput {
     * @return
     */
   def entry(tpl: DocTemplateEntity, member: MemberEntity)(implicit collector: Formatter): Option[String] = {
+    if (member.isConstructor) {
+      println(member.comment)
+    }
     val text = commentToText(member.comment)
     if (text.nonEmpty) {
       val memberName = if (member.isDef) {
         member.signatureCompat.takeWhile(ch => ch != ':')
       } else {
+        println("Member is not def")
         member.name
       }
       Some(collector.collect(getBaseName(tpl), memberName, text))
